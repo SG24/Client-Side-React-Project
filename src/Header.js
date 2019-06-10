@@ -1,3 +1,11 @@
+/**
+ * How to use Header Component
+ *  Renders the hero banner
+ *  Requirements:
+ *    => isOpen: a boolean declaring if the market is open
+ *    => title: The title to be displayed on the banner
+ */
+
 // Importing Modules
 import React from "react";
 import "bulma/css/bulma.min.css";
@@ -29,6 +37,9 @@ class Header extends React.Component {
               <h2 className={subtitleClass}>
                 {subtitleText}
               </h2>
+              <h3 className="subtitle is-italic">
+                {this.props.title}
+              </h3>
             </div>
           </div>
         </section>

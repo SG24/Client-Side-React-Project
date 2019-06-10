@@ -1,6 +1,7 @@
 // Importing Modules
 import React from "react";
 import Home from "./Home";
+import Nav from "./Navbar";
 
 // Declaring components
 class App extends React.Component {
@@ -12,7 +13,10 @@ class App extends React.Component {
   }
   render(){
     return (
-      <Home />
+      <div>
+        <Nav />
+        <Home />
+      </div>
     );
   }
 }

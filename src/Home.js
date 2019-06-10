@@ -66,7 +66,7 @@ class Home extends React.Component {
   calcHeaders = (rawData) => {
     let headers = [];
     if (rawData.length !== 0 && !rawData[0].err) {
-      rawData.filter(d => {
+      rawData.forEach(d => {
         headers.push(d.head);
       });
     }
@@ -139,7 +139,7 @@ class Home extends React.Component {
     // returning JSx.
     return (
       <main>
-        <Header isOpen={isOpen} />
+        <Header isOpen={isOpen} title="Home"/>
         <div className="container margin-bottom-20px">
           <Tabs onClick={this.onClickTabs} headers={this.calcHeaders(this.state.homeData)} />
           <Table colorCode={["change", "changePercentage", "price", "open", "high", "low"]} highlightFirstCol={true} headers={this.parseTableHeaders()} data={this.parseTableData()} />
