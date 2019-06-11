@@ -65,6 +65,7 @@ class Home extends React.Component {
   // calculating and returning an headers array
   calcHeaders = (rawData) => {
     let headers = [];
+
     if (rawData.length !== 0 && !rawData[0].err) {
       rawData.forEach(d => {
         headers.push(d.head);
