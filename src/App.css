@@ -1,6 +1,10 @@
 /* Styles */
 
 /* spacing and positioning */
+.margin-top-50px {
+  margin-top: 50px;
+}
+
 .margin-bottom-20px {
   margin-bottom: 20px; 
 }
@@ -12,4 +16,9 @@
 
 .text-center {
   text-align: center;
+}
+
+.grid-center {
+  display: grid;
+  place-items: center;
 }
