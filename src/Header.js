@@ -22,7 +22,7 @@ class Header extends React.Component {
   render() {
     // Interpreting information
     let subtitleClass = this.props.isOpen ? "subtitle has-text-primary" : "subtitle has-text-danger";
-    let subtitleText = this.props.isOpen ? "The market is open!" : "The market is closed! Check back at 9 a.m. EDT.";
+    let subtitleText = this.props.isOpen ? "The market is open!" : "The market is closed! Check back at 9:30 a.m. EDT.";
 
     // Returning JSx
     return (
