@@ -56,8 +56,21 @@ class App extends React.Component {
           <Route exact path="/search/crypto" component={SearchCrypto} />
           <Route exact path="/search/companies" component={SearchCompanies} />
           <Route exact path="/about" component={About} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/signup" component={SignUp} />
+          
+          <Route 
+            exact path="/signup"
+            render={(routeprops) => (
+              <SignUp {...routeprops} isOpen={nyse.isTheMarketOpen} />
+            )}
+          />
+          
+          <Route 
+            exact path="/login"
+            render={(routeprops) => (
+              <Login {...routeprops} isOpen={nyse.isTheMarketOpen} />
+            )}
+          />
+          
           <Route 
             render={(routeprops) => (
               <NotFound {...routeprops} isOpen={nyse.isTheMarketOpen} />
