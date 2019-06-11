@@ -8,7 +8,6 @@ import "bulma/css/bulma.min.css";
 import "./App.css";
 
 // Declaring Components //
-// Declaring nav bar and handling routing
 function Nav(props) {
 
   return (
