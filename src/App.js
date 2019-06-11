@@ -2,7 +2,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 // Importing Components
-import Main from "./Main";
+import Home from "./Home";
 import SignUp from "./SignUp";
 import Login from "./Login";
 import SearchCrypto from "./SearchCypto";
@@ -26,7 +26,7 @@ class App extends React.Component {
         <Nav />
 
         <Switch>
-          <Route exact path="/" component={Main} />
+          <Route exact path="/" component={Home} />
           <Route exact path="/search/crypto" component={SearchCrypto} />
           <Route exact path="/search/companies" component={SearchCompanies} />
           <Route exact path="/about" component={About} />
