@@ -140,7 +140,7 @@ class Home extends React.Component {
     // returning JSx.
     return (
       <main>
-        <Header isOpen={isOpen} title="Home"/>
+        <Header title="Home"/>
         <div className="container margin-bottom-20px">
           <Tabs onClick={this.onClickTabs} headers={this.calcHeaders(this.state.homeData)} />
           <Table colorCode={["change", "changePercentage", "price", "open", "high", "low"]} highlightFirstCol={true} headers={this.parseTableHeaders()} data={this.parseTableData()} />
