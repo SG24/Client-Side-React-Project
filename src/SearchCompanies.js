@@ -2,6 +2,8 @@
 import React from "react";
 import "bulma/css/bulma.min.css";
 import "./App.css";
+import {getUserID} from "./utils/auth";
+import {Redirect} from "react-router-dom";
 
 // Declaring Components
 class SearchCompanies extends React.Component {
@@ -13,6 +15,14 @@ class SearchCompanies extends React.Component {
   }
 
   render() {
+
+
+    // authenticating user
+    if(!getUserID().token) return (
+      <Redirect to="/login/auth" />
+    );
+
+    // returning JSx if logged in
     return (
       <h1>SearchCompanies</h1>
     );
