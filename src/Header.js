@@ -5,10 +5,6 @@
  *    => title: The title to be displayed on the banner
  */
 
-// ==============================================================
-// HEader not updating with fetched data
-// ==============================================================
-
 // Importing Modules
 import React from "react";
 import "bulma/css/bulma.min.css";
@@ -40,9 +36,7 @@ class Header extends React.Component {
 
   render() {
     // extracting information
-    let isOpen = this.state.nyse ? this.state.nyse.isTheMarketOpen : -1;
-
-    // console.log(isOpen);
+    let isOpen = this.state.nyse ? this.state.nyse.isTheStockMarketOpen : -1;
 
     // Interpreting information
     let subtitleClass = isOpen ? "subtitle has-text-primary" : "subtitle has-text-danger";
