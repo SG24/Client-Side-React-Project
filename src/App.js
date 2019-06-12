@@ -6,7 +6,7 @@ import { getUserID } from "./utils/auth";
 import Home from "./Home";
 import SignUp from "./SignUp";
 import Login from "./Login";
-import SearchCrypto from "./SearchCypto";
+import SearchCrypto from "./SearchCrypto";
 import SearchCompanies from "./SearchCompanies";
 import About from "./About";
 import NotFound from "./NotFound";
