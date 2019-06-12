@@ -3,8 +3,8 @@ import React from "react";
 import "bulma/css/bulma.min.css";
 import "./App.css";
 import Header from "./Header";
-
 import axios from "axios";
+import {saveUserID} from "./utils/auth";
 
 // declaring constants
 const LOGIN_URL = "/users/login";
@@ -38,7 +38,12 @@ class Login extends React.Component {
     // sending user info to server and storing the received token if success, redirecting to home
     axios.post(LOGIN_URL, {username, password})
       .then(data => {
-        if(data.data.success) this.props.history.push("/");
+        if(data.data.success) {
+          let {username} = data.data.user;
+          let token = data.data.token;
+          saveUserID({username, token});
+          this.props.history.push("/");
+        }
         else alert(data.data.err);
       })
       .catch(e => console.log(e));
@@ -77,6 +82,9 @@ class Login extends React.Component {
               <button type="reset" className="button is-text">Cancel</button>
             </div>
           </div>
+
+          <p className="subtitle has-text-danger is-italic is-size-6">{this.props.match.params.id === "auth" ? "Login to gain access" : ""}</p>
+
         </form>
       </div>
     );

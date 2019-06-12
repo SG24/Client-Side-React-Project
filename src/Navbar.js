@@ -6,6 +6,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "bulma/css/bulma.min.css";
 import "./App.css";
+import {clearUserID } from "./utils/auth";
 
 // Declaring Components //
 class Nav extends React.Component {
@@ -21,9 +22,16 @@ class Nav extends React.Component {
     this.setState({isBurgerActive: !this.state.isBurgerActive});
   }
 
+  // handling logout
+  handleLogOut = () => {
+    clearUserID();
+  }
+
   render(){
     // calculating classes
     let isActive = this.state.isBurgerActive ? " is-active" : "";
+    let {isLoggedIn, user} = this.props;
+    let {handleLogOut} = this;
 
     return (
       <nav className="navbar is-fixed-bottom is-dark is-bold" role="navigation" aria-label="main navigation">
@@ -70,12 +78,36 @@ class Nav extends React.Component {
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
-                <Link to="/signup" className="button is-primary">
-                  <strong>Sign up</strong>
-                </Link>
-                <Link to="/login" className="button is-light">
-                  Log in
-                </Link>
+
+                {
+                  (function(){
+                    if(!isLoggedIn){
+                      return (
+                        <>
+                          <Link to="/signup" className="button is-primary">
+                            <strong>Sign up</strong>
+                          </Link>
+                          <Link to="/login/user" className="button is-light">
+                            Log in
+                          </Link>
+                        </>
+                      );
+                    }
+                    else if(isLoggedIn){
+                      return (
+                        <>
+                          <Link to="/me" className="button is-link">
+                            <strong>{user}</strong>
+                          </Link>
+                          <Link to="/" onClick={handleLogOut} className="button is-danger">
+                            LogOut
+                          </Link>
+                        </>
+                      );
+                    }
+                  })()
+                }
+
               </div>
             </div>
           </div>

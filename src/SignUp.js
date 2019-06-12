@@ -40,7 +40,7 @@ class SignUp extends React.Component {
     // sending user info to server and redirecting to login if success
     axios.post(SIGNUP_URL, { username, password, email })
       .then(data => {
-        if(data.data.success) this.props.history.push("/login");
+        if(data.data.success) this.props.history.push("/login/user");
         else alert(data.data.err);
       })
       .catch(e => console.log(e));
