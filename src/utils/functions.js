@@ -10,6 +10,6 @@ async function fetchData(url) {
 }
 
 // Exporting functions
-const functions = { fetchData, axiosPost };
+const functions = { fetchData };
 
 export default functions;
