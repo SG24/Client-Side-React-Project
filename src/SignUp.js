@@ -57,7 +57,7 @@ class SignUp extends React.Component {
 
         <Header title="SignUp" />
 
-        <form className="container">
+        <form className="container padding-40px">
 
           <div className="field">
             <label className="label">Username</label>

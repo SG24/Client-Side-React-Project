@@ -1,6 +1,10 @@
 /* Styles */
 
 /* spacing and positioning */
+.padding-40px {
+  padding: 40px;
+}
+
 .margin-top-50px {
   margin-top: 50px;
 }

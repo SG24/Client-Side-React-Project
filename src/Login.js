@@ -58,7 +58,7 @@ class Login extends React.Component {
 
         <Header title="Login" />
 
-        <form className="container">
+        <form className="container padding-40px">
 
           <div className="field">
             <label className="label">Username</label>
