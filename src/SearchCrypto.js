@@ -19,6 +19,8 @@ class SearchCrypto extends React.Component {
       searchInputValue: "",
       googleUrl: "",
       query: "",
+      isBookmarked: false,
+      needsUpdate: false,
     };
   }
 
@@ -57,7 +59,7 @@ class SearchCrypto extends React.Component {
   handleSearch = () => {
     let search = this.state.searchInputValue;
 
-    if(search === "") return alert("Input cannot be empty!");
+    if (search === "") return alert("Input cannot be empty!");
 
     this.setState({
       searchInputValue: "",
@@ -85,17 +87,57 @@ class SearchCrypto extends React.Component {
       })
   }
 
+  // handles bookmark update
+  handleBookmarkUpdate = () => {
+    this.setState({
+      isBookmarked: !this.state.isBookmarked,
+      needsUpdate: true,
+    });
+  }
+
+  // updates profile after change in bookmark status
+  handleProfileUpdate = () => {
+    // updating state
+    this.setState({ needsUpdate: false });
+
+    // creating bookmark object
+    let bookmark = {
+      type: "Crypto-Currency",
+      ticker: this.state.query.toUpperCase(),
+      url: this.state.cc["Crypto-Currencies"].replace("{ticker}", this.state.query.toUpperCase()),
+      bookmarkedPrice: this.state.displayData.price,
+      bookmarkedDate: (new Date()).toGMTString(),
+    };
+
+    // making a post request
+    setAuthToken();
+    axios.post("/users/bookmarks/new", {
+      data: { bookmark },
+    })
+      .then(data => {
+        if (data.success) alert("Update successful!")
+        else if (!data.success) alert("Failed to save changes!");
+      })
+      .catch(e => {
+        alert("Unable to book, try again later!");
+        console.log("Unexpected error occurred while trying to save the bookmark: ", e);
+      });
+  }
+
   render() {
 
     // extracts information
-    let { searchInputValue, displayData, googleUrl, query } = this.state;
+    let { searchInputValue, displayData, googleUrl, query, isBookmarked, needsUpdate } = this.state;
+    let { handleBookmarkUpdate, handleProfileUpdate } = this;
 
     // calculates result container classes
     let resultContainerClasses = `container box padding-40px margin-bottom-20px ${!displayData ? "is-hidden" : ""}`;
     let valueClasses = displayData && displayData.changes >= 0 ? "has-text-success" : "has-text-danger";
-    
+    let bookmarkRibbonClass = isBookmarked ? "bookmark-on" : "bookmark-off";
+    let updateProfileBtnClass = needsUpdate ? "button is-success is-small is-pulled-right" : "button is-success is-small is-pulled-right is-hidden";
+
     // parsing data
-    let marketCap = displayData && displayData.marketCapitalization ? (displayData.marketCapitalization+"").split("").reverse().map((d,i,ar) => (i+1)%3===0 && i!==ar.length-1 ? ","+d : d).reverse().join("") : 0;
+    let marketCap = displayData && displayData.marketCapitalization ? (displayData.marketCapitalization + "").split("").reverse().map((d, i, ar) => (i + 1) % 3 === 0 && i !== ar.length - 1 ? "," + d : d).reverse().join("") : 0;
 
     // authenticates user
     if (!getUserID().token) return (
@@ -113,24 +155,28 @@ class SearchCrypto extends React.Component {
           <a></a>
         </div>
 
-        <div className={resultContainerClasses}>
+        <div className={resultContainerClasses} id="page">
 
           {
 
-            (function(){
-              if(displayData && !displayData.Error){
+            (function () {
+              if (displayData && !displayData.Error) {
                 return (
                   <>
-                    <h2 className="subtitle">{displayData.name + " (" + displayData.ticker + ")"}</h2>
+                    <div onClick={handleBookmarkUpdate} id="ribbon" className={bookmarkRibbonClass}><div>{query.toUpperCase()}</div></div>
+                    <h2 className="subtitle">
+                      {displayData.name + " (" + displayData.ticker + ")"}
+                      <span><a onClick={handleProfileUpdate} className={updateProfileBtnClass}>Update Profile</a></span>
+                    </h2>
                     <div><span className="has-text-weight-semibold">Current Price (USD): </span><pre className={valueClasses}>{displayData.price}</pre></div>
-                    <div><span className="has-text-weight-semibold">Changes (USD): </span><pre className={valueClasses}>{displayData.changes > 0 ? "+" + displayData.changes: displayData.changes}</pre></div>
+                    <div><span className="has-text-weight-semibold">Changes (USD): </span><pre className={valueClasses}>{displayData.changes > 0 ? "+" + displayData.changes : displayData.changes}</pre></div>
                     <div><span className="has-text-weight-semibold">Market Capitalization (USD): </span><pre>{marketCap}</pre></div>
                   </>
 
                 );
               }
-              else if(displayData && displayData.Error) return (
-                  <p className="is-italic">Unable to find results, maybe the links below can help.</p>
+              else if (displayData && displayData.Error) return (
+                <p className="is-italic">Unable to find results, maybe the links below can help.</p>
               );
             })()
 

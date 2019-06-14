@@ -26,3 +26,64 @@
   display: grid;
   place-items: center;
 }
+
+/* BookMark Ribbon
+  USE:
+    <div id="page">
+      <div id="ribbon">
+        <div>4</div>
+      </div>
+      <p>qwertyuiopoiuytrew</p>
+    </div>
+*/
+#page {
+  /* background: #ddd; */
+  /* padding: 0.25em 1em; */
+  position: relative;
+  /* width: 300px; */
+}
+
+#ribbon {
+  padding: 0 0 10px 0;
+  position: absolute;
+  right: 0.25em;
+  top: -0.25em;
+  width: 40px;
+}
+#ribbon div {
+  padding: 0.5em 0;
+  text-align: center;
+  text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.5);
+}
+#ribbon div:after {
+  border-bottom: 10px solid transparent;
+  bottom: 0;
+  content: '';
+  height: 0;
+  left: 0;
+  position: absolute;
+  width: 0;
+}
+
+/* Handling different bookmark states */
+.bookmark-on#ribbon div {
+  color: rgba(61, 61, 61, 0.514);
+  background:yellow;
+  background: linear-gradient(rgb(253, 253, 50) 0%,yellow 100%);
+}
+
+.bookmark-on#ribbon div:after{
+  border-left: 20px solid yellow;
+  border-right: 20px solid yellow;
+}
+
+.bookmark-off#ribbon div {
+  color: white;
+  background: #bb3a34;
+  background: linear-gradient(#e74841 0%, #bb3a34 100%);
+}
+
+.bookmark-off#ribbon div:after{
+  border-left: 20px solid #bb3a34;
+  border-right: 20px solid #bb3a34;
+}
