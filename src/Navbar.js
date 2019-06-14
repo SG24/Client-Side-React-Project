@@ -6,11 +6,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "bulma/css/bulma.min.css";
 import "./App.css";
-import {clearUserID } from "./utils/auth";
+import setAuthToken, { clearUserID } from "./utils/auth";
 
 // Declaring Components //
 class Nav extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       isBurgerActive: false,
@@ -19,19 +19,20 @@ class Nav extends React.Component {
 
   // handling click on hamburgerBurger on smaller screens for menu
   onBurgerClick = () => {
-    this.setState({isBurgerActive: !this.state.isBurgerActive});
+    this.setState({ isBurgerActive: !this.state.isBurgerActive });
   }
 
   // handling logout
   handleLogOut = () => {
     clearUserID();
+    setAuthToken();
   }
 
-  render(){
+  render() {
     // calculating classes
     let isActive = this.state.isBurgerActive ? " is-active" : "";
-    let {isLoggedIn, user} = this.props;
-    let {handleLogOut} = this;
+    let { isLoggedIn, user } = this.props;
+    let { handleLogOut } = this;
 
     return (
       <nav className="navbar is-fixed-bottom is-dark is-bold" role="navigation" aria-label="main navigation">
@@ -39,25 +40,25 @@ class Nav extends React.Component {
           <a className="navbar-item is-uppercase is-italic has-text-weight-bold" href="#">
             Stock Market
           </a>
-  
+
           <a onClick={() => this.onBurgerClick()} role="button" className={"navbar-burger burger" + isActive} aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
           </a>
         </div>
-  
+
         <div id="navbarBasicExample" className={"navbar-menu" + isActive}>
           <div className="navbar-start">
             <Link to="/" className="navbar-item">
               Home
             </Link>
-  
+
             <div className="navbar-item has-dropdown has-dropdown-up is-hoverable">
               <a className="navbar-link">
                 Search More
               </a>
-  
+
               <div className="navbar-dropdown has-text-weight-bold">
                 <Link to="/search/crypto" className="navbar-item">
                   CryptoCurrencies
@@ -65,23 +66,23 @@ class Nav extends React.Component {
                 <Link to="/search/companies" className="navbar-item">
                   Stocks &amp; Companies
                 </Link>
-  
+
                 <hr className="navbar-divider" />
-  
+
                 <Link to="/about" className="navbar-item">
                   About Us
                 </Link>
               </div>
             </div>
           </div>
-  
+
           <div className="navbar-end">
             <div className="navbar-item">
               <div className="buttons">
 
                 {
-                  (function(){
-                    if(!isLoggedIn){
+                  (function () {
+                    if (!isLoggedIn) {
                       return (
                         <>
                           <Link to="/signup" className="button is-primary">
@@ -93,7 +94,7 @@ class Nav extends React.Component {
                         </>
                       );
                     }
-                    else if(isLoggedIn){
+                    else if (isLoggedIn) {
                       return (
                         <>
                           <Link to="/me" className="button is-link">

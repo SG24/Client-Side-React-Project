@@ -4,7 +4,7 @@ import "bulma/css/bulma.min.css";
 import "./App.css";
 import Header from "./Header";
 import axios from "axios";
-import {saveUserID} from "./utils/auth";
+import setAuthToken, { saveUserID } from "./utils/auth";
 
 // declaring constants
 const LOGIN_URL = "/users/login";
@@ -36,12 +36,15 @@ class Login extends React.Component {
       password: "",
     });
     // sending user info to server and storing the received token if success, redirecting to home
-    axios.post(LOGIN_URL, {username, password})
+    axios.post(LOGIN_URL, { username, password })
       .then(data => {
-        if(data.data.success) {
-          let {username} = data.data.user;
+        if (data.data.success) {
+          let { username } = data.data.user;
           let token = data.data.token;
-          saveUserID({username, token});
+
+          saveUserID({ username, token });
+          setAuthToken();
+
           this.props.history.push("/");
         }
         else alert(data.data.err);
