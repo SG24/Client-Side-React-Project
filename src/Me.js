@@ -15,7 +15,7 @@ class Me extends React.Component {
     super(props);
     this.state = {
       user: null,
-      current_bookmarks_cc: null,
+      current_bookmarks_cc: {},
     };
   }
 
@@ -25,7 +25,7 @@ class Me extends React.Component {
       { user: getUserID() },
       () => {
         // fetching current prices of bookmarks cc once the user's been loaded
-        if (this.state.current_bookmarks_cc === null) this.fetchData();
+        this.fetchData();
       }
     );
   }
@@ -58,7 +58,7 @@ class Me extends React.Component {
   render() {
     // extracting information
     let { username, bookmarks_cc, email } = this.state.user ? this.state.user : { username: null, email: null, bookmarks_cc: null };
-    let current_bookmarks_cc = this.state;
+    let { current_bookmarks_cc } = this.state;
 
     // authenticating user login
     if (!getUserID().token) return (
@@ -112,21 +112,21 @@ class Me extends React.Component {
                       return (
 
                         <tr key={uuvid4()}>
-                          <td>{cc.ticker}</td>
+                          <td className="has-text-weight-semibold">{cc.ticker}</td>
                           <td>{cc.bookmarkedDate}</td>
                           <td>{cc.bookmarkedPrice}</td>
 
                           {
                             (function () {
 
-                              console.log("inside function printing current price", current_bookmarks_cc === null, current_bookmarks_cc);
+                              // default if the current bookmarked cc price of the selected doesn't exist
+                              if (!current_bookmarks_cc[cc.ticker]) return (<td><a className="button is-warning is-loading no-borders has-background-white">Loading</a></td>)
 
-                              // default if the current bookmarked cc price is null
-                              if (current_bookmarks_cc === null) return (<td><a className="button is-warning is-loading no-borders has-background-white">Loading</a></td>)
+                              // calculating result
+                              let resultClass = current_bookmarks_cc[cc.ticker] < cc.bookmarkedPrice ? "has-text-danger" : "has-text-success";
 
-                              // returns current price 
                               return (
-                                <td>{current_bookmarks_cc[cc.ticker]}</td>
+                                <td className={resultClass}>{current_bookmarks_cc[cc.ticker]}</td>
                               );
 
                             })()
