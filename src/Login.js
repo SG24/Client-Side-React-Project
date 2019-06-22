@@ -39,10 +39,10 @@ class Login extends React.Component {
     axios.post(LOGIN_URL, { username, password })
       .then(data => {
         if (data.data.success) {
-          let { username } = data.data.user;
+          let { username, bookmarks_cc, email } = data.data.user;
           let token = data.data.token;
 
-          saveUserID({ username, token });
+          saveUserID({ username, token, bookmarks_cc: JSON.stringify(bookmarks_cc), email });
           setAuthToken();
 
           this.props.history.push("/");

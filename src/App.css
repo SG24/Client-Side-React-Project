@@ -27,6 +27,11 @@
   place-items: center;
 }
 
+/* Looks */
+.no-borders {
+  border: none;
+}
+
 /* BookMark Ribbon
   USE:
     <div id="page">

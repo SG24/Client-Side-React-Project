@@ -2,7 +2,7 @@
 import React from "react";
 import "bulma/css/bulma.min.css";
 import "./App.css";
-import setAuthToken, { getUserID } from "./utils/auth";
+import setAuthToken, { getUserID, updateUserBookmarks } from "./utils/auth";
 import { Redirect } from "react-router-dom";
 import axios from "axios";
 
@@ -66,6 +66,14 @@ class SearchCrypto extends React.Component {
       googleUrl: "https://www.google.com/search?q=" + search,
       query: search,
     });
+    // checks if the unit search is already bookmarked
+    let bookmarksCC = JSON.parse(getUserID().bookmarks_cc);
+    if (bookmarksCC.filter(bm => bm.ticker === search.toUpperCase()).length !== 0) {
+      this.setState({ isBookmarked: true });
+    }
+    else {
+      this.setState({ isBookmarked: false });
+    }
     this.fetchData(search);
   }
 
@@ -102,7 +110,7 @@ class SearchCrypto extends React.Component {
 
     // creating bookmark object
     let bookmark = {
-      type: "Crypto-Currency",
+      bookmarkType: "Crypto-Currency",
       ticker: this.state.query.toUpperCase(),
       url: this.state.cc["Crypto-Currencies"].replace("{ticker}", this.state.query.toUpperCase()),
       bookmarkedPrice: this.state.displayData.price,
@@ -111,17 +119,25 @@ class SearchCrypto extends React.Component {
 
     // making a post request
     setAuthToken();
-    axios.post("/users/bookmarks/new", {
-      data: { bookmark },
+    axios.post("/users/bookmarks/update", {
+      data: { isBookmarked: this.state.isBookmarked, bookmark },
     })
       .then(data => {
-        if (data.success) alert("Update successful!")
-        else if (!data.success) alert("Failed to save changes!");
+        if (data.data.success) {
+          alert("Update successful!");
+          return true;
+        }
+        else if (!data.data.success) {
+          alert("Failed to save changes!");
+          return false;
+        };
       })
       .catch(e => {
-        alert("Unable to book, try again later!");
-        console.log("Unexpected error occurred while trying to save the bookmark: ", e);
-      });
+        alert("Unable to update bookmark, try again later!");
+        console.log("Unexpected error occurred while trying to update the bookmark: ", e);
+      })
+      .then(status => {if(status) updateUserBookmarks()});
+      
   }
 
   render() {

@@ -5,7 +5,6 @@ import React from 'react';
 import "bulma/css/bulma.min.css";
 import './App.css';
 import Header from "./Header";
-import Footer from "./Footer";
 import Table from "./Table";
 import Tabs from "./Tabs";
 
@@ -145,7 +144,6 @@ class Home extends React.Component {
           <Tabs onClick={this.onClickTabs} headers={this.calcHeaders(this.state.homeData)} />
           <Table colorCode={["change", "changePercentage", "price", "open", "high", "low"]} highlightFirstCol={true} headers={this.parseTableHeaders()} data={this.parseTableData()} />
         </div>
-        <Footer />
       </main>
     );
   }

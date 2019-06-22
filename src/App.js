@@ -12,6 +12,7 @@ import About from "./About";
 import NotFound from "./NotFound";
 import Nav from "./Navbar";
 import Me from "./Me";
+import Footer from "./Footer";
 
 // Declaring components and handling routing
 class App extends React.Component {
@@ -84,6 +85,9 @@ class App extends React.Component {
           />
 
         </Switch>
+
+        <Footer />
+
       </Router>
     );
   }
