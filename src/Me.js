@@ -1,6 +1,7 @@
 // Importing Modules
 import React from "react";
-import setAuthToken, { getUserID } from "./utils/auth";
+import axios from "axios";
+import setAuthToken, { getUserID, updateUserBookmarks } from "./utils/auth";
 import uuvid4 from "uuid/v4";
 import { Redirect } from "react-router-dom";
 import Header from "./Header";
@@ -16,6 +17,9 @@ class Me extends React.Component {
     this.state = {
       user: null,
       current_bookmarks_cc: {},
+      profileUpdated: false,
+      bookmarks_update_count: 0,
+      updatedBookmarks: {},
     };
   }
 
@@ -39,14 +43,14 @@ class Me extends React.Component {
       fetch(cc.url)
         .then(res => res.json())
         .then(data => {
-          let current_bookmarks_cc = this.state;
+          let { current_bookmarks_cc } = this.state;
           current_bookmarks_cc[cc.ticker] = data.price;
           // updating current bookmark prices in state
           this.setState({ current_bookmarks_cc: current_bookmarks_cc });
           return 0;
         })
         .catch(e => {
-          let current_bookmarks_cc = this.state;
+          let { current_bookmarks_cc } = this.state;
           current_bookmarks_cc[cc.ticker] = "Unable to fetch data!";
           // updating current bookmarks price state
           this.setState({ current_bookmarks_cc: current_bookmarks_cc });
@@ -55,10 +59,97 @@ class Me extends React.Component {
     });
   }
 
+  handleBookmarkChange = (event) => {
+    // extracting states
+    let { bookmarks_update_count, updatedBookmarks, profileUpdated } = this.state;
+
+    // resetting updated count and profilepdated boolean
+    bookmarks_update_count = 0;
+    profileUpdated = false;
+    // updating updated bookmarks list
+    updatedBookmarks[event.target.dataset.ccticker] = !updatedBookmarks[event.target.dataset.ccticker];
+    // updating updated bookmarks count
+    for (let key in updatedBookmarks) {
+      if (updatedBookmarks[key]) {
+        bookmarks_update_count++;
+        profileUpdated = true;
+      }
+    }
+
+    this.setState({
+      updatedBookmarks: updatedBookmarks,
+      bookmarks_update_count: bookmarks_update_count,
+      profileUpdated: profileUpdated,
+    });
+  }
+
+  handleSavePreferences = () => {
+    // extracting states
+    let { updatedBookmarks } = this.state;
+
+    // counter to count interations
+    let counter = Object.keys(updatedBookmarks).length;
+
+    // updating bookmark status on server
+    for (let key in updatedBookmarks) {
+      // decrementing counter
+      counter--;
+
+      // updating bookmarked cc on server if updated true
+      if (updatedBookmarks[key]) {
+        // creating bookmark object
+        let bookmark = {
+          bookmarkType: "Crypto-Currency",
+          ticker: key,
+          url: "",
+          bookmarkedPrice: 0,
+          bookmarkedDate: 0,
+        };
+
+        // making a post request
+        setAuthToken();
+        axios.post("/users/bookmarks/update", {
+          data: { isBookmarked: false, bookmark },
+        })
+          .then(data => {
+            if (data.data.success) {
+              // alert("Update successful!");
+              return true;
+            }
+            else if (!data.data.success) {
+              // alert("Failed to save changes!");
+              return false;
+            };
+          })
+          .catch(e => {
+            alert("Unable to update bookmark, try again later!");
+            console.log("Unexpected error occurred while trying to update the bookmark: ", e);
+            return false;
+          });
+      }
+      // if through with all updated bookmarks, fetching and saving updated bookmark info
+      if (counter === 0) {
+        this.setState({
+          user: getUserID(),
+        });
+      }
+    }
+    // resetting bookmark update state for cc
+    this.setState({
+      bookmarks_update_count: 0,
+      profileUpdated: false,
+      updatedBookmarks: {},
+    });
+  }
+
   render() {
     // extracting information
+    let { handleBookmarkChange, handleSavePreferences } = this;
     let { username, bookmarks_cc, email } = this.state.user ? this.state.user : { username: null, email: null, bookmarks_cc: null };
-    let { current_bookmarks_cc } = this.state;
+    let { current_bookmarks_cc, updatedBookmarks, profileUpdated } = this.state;
+
+    // calculating classes
+    let savePreferencesBtnClass = profileUpdated ? "button is-info" : "button in-info is-hidden";
 
     // authenticating user login
     if (!getUserID().token) return (
@@ -84,7 +175,7 @@ class Me extends React.Component {
 
             <h3 className="subtitle">Bookmarked CryptoCurrencies:</h3>
 
-            <table className="table is-striped is-bordered">
+            <table className="table is-striped is-bordered container margin-center margin-bottom-20px">
 
               <thead>
                 <tr>
@@ -92,6 +183,7 @@ class Me extends React.Component {
                   <th>Date when bookmarked</th>
                   <th>Price when bookmarked</th>
                   <th>Current Price</th>
+                  <th>Remove bookmark?</th>
                 </tr>
               </thead>
 
@@ -104,10 +196,14 @@ class Me extends React.Component {
                     let bookmarks = JSON.parse(bookmarks_cc);
 
                     // if no bookmarks found
-                    if (!bookmarks || bookmarks.length === 0) return (<tr><td colSpan="4">No bookmarked Crypto-Currencies yet!</td></tr>);
+                    if (!bookmarks || bookmarks.length === 0) return (<tr><td colSpan="5">No Crypto-Currencies bookmarked yet!</td></tr>);
 
                     // if bookmarks found, calculates resultant JSx with prices
                     let result = bookmarks.map(cc => {
+
+                      // calculating classes
+                      let buttonClass = updatedBookmarks[cc.ticker] ? "button is-primary is-small" : "button is-danger is-small";
+                      let buttonText = updatedBookmarks[cc.ticker] ? "Re-bookmark" : "Remove";
 
                       return (
 
@@ -123,15 +219,16 @@ class Me extends React.Component {
                               if (!current_bookmarks_cc[cc.ticker]) return (<td><a className="button is-warning is-loading no-borders has-background-white">Loading</a></td>)
 
                               // calculating result
-                              let resultClass = current_bookmarks_cc[cc.ticker] < cc.bookmarkedPrice ? "has-text-danger" : "has-text-success";
+                              let currentPriceClass = !Number(current_bookmarks_cc[cc.ticker]) || current_bookmarks_cc[cc.ticker] < cc.bookmarkedPrice ? "has-text-danger" : "has-text-success";
 
                               return (
-                                <td className={resultClass}>{current_bookmarks_cc[cc.ticker]}</td>
+                                <td className={currentPriceClass}>{current_bookmarks_cc[cc.ticker]}</td>
                               );
 
                             })()
                           }
 
+                          <td><a data-ccticker={cc.ticker} onClick={(event) => handleBookmarkChange(event)} className={buttonClass}>{buttonText}</a></td>
                         </tr>
 
                       );
@@ -148,6 +245,8 @@ class Me extends React.Component {
             </table>
 
           </div>
+
+          <a onClick={handleSavePreferences} className={savePreferencesBtnClass}>Save Preferences</a>
         </div>
 
 

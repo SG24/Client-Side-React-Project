@@ -24,6 +24,7 @@ export function saveUserID(user) {
 // getting token from localstorage
 // returns object with status and user obj (if success)
 export function getUserID() {
+  updateUserBookmarks();
   let email = localStorage.getItem("stockMarket-email");
   let token = localStorage.getItem("stockMarket-token");
   let username = localStorage.getItem("stockMarket-user");
