@@ -3,7 +3,6 @@ import React from "react";
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { getUserID } from "./utils/auth";
 // Importing Components
-import Home from "./Home";
 import SignUp from "./SignUp";
 import Login from "./Login";
 import SearchCrypto from "./SearchCrypto";
@@ -13,6 +12,7 @@ import NotFound from "./NotFound";
 import Nav from "./Navbar";
 import Me from "./Me";
 import Footer from "./Footer";
+import DailyStockData from "./DailyStockData";
 
 // Declaring components and handling routing
 class App extends React.Component {
@@ -52,7 +52,7 @@ class App extends React.Component {
         <Nav user={user} isLoggedIn={isLoggedIn} />
 
         <Switch>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={DailyStockData} />
           <Route exact path="/search/crypto" component={SearchCrypto} />
           <Route exact path="/search/companies" component={SearchCompanies} />
           <Route exact path="/about" component={About} />
@@ -71,7 +71,7 @@ class App extends React.Component {
             )}
           />
 
-          <Route 
+          <Route
             exact path="/me"
             render={(routeprops) => (
               <Me {...routeprops} />

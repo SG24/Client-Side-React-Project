@@ -1,6 +1,10 @@
 /* Styles */
 
 /* spacing and positioning */
+.full-width {
+  width: 100%;
+}
+
 .padding-40px {
   padding: 40px;
 }
