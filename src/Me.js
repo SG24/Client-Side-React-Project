@@ -1,7 +1,7 @@
 // Importing Modules
 import React from "react";
 import axios from "axios";
-import setAuthToken, { getUserID, updateUserBookmarks } from "./utils/auth";
+import setAuthToken, { getUserID, updateUserBookmarks, clearUserID } from "./utils/auth";
 import uuvid4 from "uuid/v4";
 import { Redirect } from "react-router-dom";
 import Header from "./Header";
@@ -167,37 +167,60 @@ class Me extends React.Component {
   }
 
   // handling password change button click
-  handlePasswordResetClick = () => {
-    let { oldPassword, newPassword } = this.state;
-    setAuthToken();
-    axios.post("/users/update/password", {
-      data: {
-        oldPassword,
+  handleProfileUpdateClick = (event) => {
+    let { oldPassword, newPassword, password } = this.state;
+    let url, data;
+    if(event.target.name === "changePassword") {
+      data = {
+        oldPassword, 
         newPassword,
-      }
+      };
+      url = "/users/update/password";
+    }
+    else if(event.target.name === "deleteAccount") {
+      data = {
+        password
+      }; 
+      url = "/users/delete";
+    }
+    setAuthToken();
+    axios.post(url, {
+      data: data
     })
       .then(res => res.data)
       .then(data => {
         if(data.success) {
-          alert("Password Changed Successfully");
+          alert("Request fulfilled!");
         }
         else if(!data.success) {
-          alert("Unable to change password, " + data.err);
+          alert("Request denied, " + data.err);
         }
         this.setState({
           oldPassword: "",
           newPassword: "",
+          password: "",
           isResetPasswordOpen: false,
+          isDeleteAccountOpen: false,
         });
+        return data.success;
       })
       .catch(e => {
-        alert("Unable to change password!");
+        alert("Encountered Error while trying to fulfill the request.");
         this.setState({
           oldPassword: "",
           newPassword: "",
+          password: "",
           isResetPasswordOpen: false,
+          isDeleteAccountOpen: false,
         });
         console.log("Me.js: ", e);
+        return false;
+      })
+      .then(status => {
+        if(status){
+          clearUserID();
+          this.props.history.push("/login/auth");
+        }
       });
   }
 
@@ -231,7 +254,7 @@ class Me extends React.Component {
             <p className="subtitle">Enter current and new passwords: </p>
             <input value={oldPassword} onChange={this.handleInputChange} className="input is-info margin-bottom-20px" type="text" name="oldPassword" placeholder="Current Password: " required />
             <input value={newPassword} onChange={this.handleInputChange} className="input is-info margin-bottom-20px" type="text" name="newPassword" placeholder="New Password: " required />
-            <a onClick={this.handlePasswordResetClick} className="button is-link">Save Changes</a>
+            <a onClick={this.handleProfileUpdateClick} className="button is-link" name="changePassword">Save Changes</a>
           </div>
 
         </div>
@@ -242,7 +265,7 @@ class Me extends React.Component {
             <span onClick={this.handleDeleteAccount} className="close has-text-danger">&times;</span>
             <p className="subtitle">Enter password to confirm: </p>
             <input value={password} onChange={this.handleInputChange} className="input is-danger margin-bottom-20px" type="text" name="password" placeholder="Password: " required />
-            <a className="button is-danger">Delete account!</a>
+            <a onClick={this.handleProfileUpdateClick} name="deleteAccount" className="button is-danger">Delete account!</a>
           </div>
 
         </div>
