@@ -7,6 +7,7 @@ import { Redirect } from "react-router-dom";
 import Header from "./Header";
 import "bulma/css/bulma.min.css";
 import "./App.css";
+import { thisTypeAnnotation } from "@babel/types";
 
 // Importing components
 
@@ -15,11 +16,16 @@ class Me extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isResetPasswordOpen: false,
+      isDeleteAccountOpen: false,
+
       user: null,
+
       current_bookmarks_cc: {},
       profileUpdated: false,
       bookmarks_update_count: 0,
       updatedBookmarks: {},
+
     };
   }
 
@@ -142,14 +148,27 @@ class Me extends React.Component {
     });
   }
 
+  // reset user password
+  handlePasswordReset = () => {
+    this.setState({isResetPasswordOpen: !this.state.isResetPasswordOpen});
+  }
+
+  // deletes user account
+  handleDeleteAccount = () => {
+    this.setState({isDeleteAccountOpen: !this.state.isDeleteAccountOpen});
+  }
+
   render() {
     // extracting information
     let { handleBookmarkChange, handleSavePreferences } = this;
     let { username, bookmarks_cc, email } = this.state.user ? this.state.user : { username: null, email: null, bookmarks_cc: null };
-    let { current_bookmarks_cc, updatedBookmarks, profileUpdated } = this.state;
+    let { current_bookmarks_cc, updatedBookmarks, profileUpdated, isResetPasswordOpen, isDeleteAccountOpen } = this.state;
 
     // calculating classes
     let savePreferencesBtnClass = profileUpdated ? "button is-info" : "button in-info is-hidden";
+    let resetPasswordModalClass = isResetPasswordOpen ? "is-block modal" : "display-none modal";
+    let deleteAccountModalClass = isDeleteAccountOpen ? "is-block modal" : "display-none modal";
+    // let resetPasswordBtnClass
 
     // authenticating user login
     if (!getUserID().token) return (
@@ -162,11 +181,31 @@ class Me extends React.Component {
 
         <Header title="Profile Page" />
 
+        {/* Modal Box for Password Reset */}
+        <div id="myModal" className={resetPasswordModalClass}>
+
+          <div className="modal-content">
+            <span onClick={this.handlePasswordReset} className="close">&times;</span>
+            <p>Some text in the Modal.. for resetting password</p>
+          </div>
+
+        </div>
+        {/* Modal Box for Deleting user account */}
+        <div id="myModal" className={deleteAccountModalClass}>
+
+          <div className="modal-content">
+            <span onClick={this.handleDeleteAccount} className="close">&times;</span>
+            <p>Some text in the Modal.. for deleting account</p>
+          </div>
+
+        </div>
+
         <div className="container box padding-40px margin-bottom-20px">
           <h2 className="title">About</h2>
           <pre><span className="has-text-weight-semibold">Username:</span> {username ? username : ""}</pre>
           <pre className="margin-bottom-20px"><span className="has-text-weight-semibold">Email:</span> {email ? email : ""}</pre>
-          <a className="button is-info">Reset Password</a>
+          <a onClick={this.handlePasswordReset} className="button is-info is-small margin-right-20px">Reset Password</a>
+          <a onClick={this.handleDeleteAccount} className="button is-danger is-small">Delete Account</a>
         </div>
 
         <div className="container padding-40px margin-bottom-20px">
