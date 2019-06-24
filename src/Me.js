@@ -184,18 +184,23 @@ class Me extends React.Component {
         {/* Modal Box for Password Reset */}
         <div id="myModal" className={resetPasswordModalClass}>
 
-          <div className="modal-content">
-            <span onClick={this.handlePasswordReset} className="close">&times;</span>
-            <p>Some text in the Modal.. for resetting password</p>
+          <div className="modal-content modal-content-border-resetPass has-background-light">
+            <span onClick={this.handlePasswordReset} className="close has-text-danger">&times;</span>
+            <p className="subtitle">Enter current and new passwords: </p>
+            <input className="input is-info margin-bottom-20px" type="text" name="oldPassword" placeholder="Current Password: " required />
+            <input className="input is-info margin-bottom-20px" type="text" name="newPassword" placeholder="New Password: " required />
+            <a className="button is-link">Save Changes</a>
           </div>
 
         </div>
         {/* Modal Box for Deleting user account */}
         <div id="myModal" className={deleteAccountModalClass}>
 
-          <div className="modal-content">
-            <span onClick={this.handleDeleteAccount} className="close">&times;</span>
-            <p>Some text in the Modal.. for deleting account</p>
+          <div className="modal-content modal-content-border-deleteAcc has-background-light">
+            <span onClick={this.handleDeleteAccount} className="close has-text-danger">&times;</span>
+            <p className="subtitle">Enter password to confirm: </p>
+            <input className="input is-danger margin-bottom-20px" type="text" name="password" placeholder="Password: " required />
+            <a className="button is-danger">Delete account!</a>            
           </div>
 
         </div>
