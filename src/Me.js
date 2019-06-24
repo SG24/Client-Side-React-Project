@@ -165,7 +165,7 @@ class Me extends React.Component {
     let { current_bookmarks_cc, updatedBookmarks, profileUpdated, isResetPasswordOpen, isDeleteAccountOpen } = this.state;
 
     // calculating classes
-    let savePreferencesBtnClass = profileUpdated ? "button is-info" : "button in-info is-hidden";
+    let savePreferencesBtnClass = profileUpdated ? "button is-info is-small" : "button in-info is-hidden is-small";
     let resetPasswordModalClass = isResetPasswordOpen ? "is-block modal" : "display-none modal";
     let deleteAccountModalClass = isDeleteAccountOpen ? "is-block modal" : "display-none modal";
     // let resetPasswordBtnClass
