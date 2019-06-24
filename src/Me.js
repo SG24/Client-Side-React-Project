@@ -7,7 +7,6 @@ import { Redirect } from "react-router-dom";
 import Header from "./Header";
 import "bulma/css/bulma.min.css";
 import "./App.css";
-import { thisTypeAnnotation } from "@babel/types";
 
 // Importing components
 
@@ -18,6 +17,9 @@ class Me extends React.Component {
     this.state = {
       isResetPasswordOpen: false,
       isDeleteAccountOpen: false,
+      oldPassword: "",
+      newPassword: "",
+      password: "",
 
       user: null,
 
@@ -150,25 +152,65 @@ class Me extends React.Component {
 
   // reset user password
   handlePasswordReset = () => {
-    this.setState({isResetPasswordOpen: !this.state.isResetPasswordOpen});
+    this.setState({ isResetPasswordOpen: !this.state.isResetPasswordOpen });
   }
 
   // deletes user account
   handleDeleteAccount = () => {
-    this.setState({isDeleteAccountOpen: !this.state.isDeleteAccountOpen});
+    this.setState({ isDeleteAccountOpen: !this.state.isDeleteAccountOpen });
+  }
+
+  // handles input value change
+  handleInputChange = (event) => {
+    let name = event.target.name;
+    this.setState({ [name]: event.target.value });
+  }
+
+  // handling password change button click
+  handlePasswordResetClick = () => {
+    let { oldPassword, newPassword } = this.state;
+    setAuthToken();
+    axios.post("/users/update/password", {
+      data: {
+        oldPassword,
+        newPassword,
+      }
+    })
+      .then(res => res.data)
+      .then(data => {
+        if(data.success) {
+          alert("Password Changed Successfully");
+        }
+        else if(!data.success) {
+          alert("Unable to change password, " + data.err);
+        }
+        this.setState({
+          oldPassword: "",
+          newPassword: "",
+          isResetPasswordOpen: false,
+        });
+      })
+      .catch(e => {
+        alert("Unable to change password!");
+        this.setState({
+          oldPassword: "",
+          newPassword: "",
+          isResetPasswordOpen: false,
+        });
+        console.log("Me.js: ", e);
+      });
   }
 
   render() {
     // extracting information
     let { handleBookmarkChange, handleSavePreferences } = this;
     let { username, bookmarks_cc, email } = this.state.user ? this.state.user : { username: null, email: null, bookmarks_cc: null };
-    let { current_bookmarks_cc, updatedBookmarks, profileUpdated, isResetPasswordOpen, isDeleteAccountOpen } = this.state;
+    let { current_bookmarks_cc, updatedBookmarks, profileUpdated, isResetPasswordOpen, isDeleteAccountOpen, oldPassword, newPassword, password } = this.state;
 
     // calculating classes
     let savePreferencesBtnClass = profileUpdated ? "button is-info is-small" : "button in-info is-hidden is-small";
     let resetPasswordModalClass = isResetPasswordOpen ? "is-block modal" : "display-none modal";
     let deleteAccountModalClass = isDeleteAccountOpen ? "is-block modal" : "display-none modal";
-    // let resetPasswordBtnClass
 
     // authenticating user login
     if (!getUserID().token) return (
@@ -187,9 +229,9 @@ class Me extends React.Component {
           <div className="modal-content modal-content-border-resetPass has-background-light">
             <span onClick={this.handlePasswordReset} className="close has-text-danger">&times;</span>
             <p className="subtitle">Enter current and new passwords: </p>
-            <input className="input is-info margin-bottom-20px" type="text" name="oldPassword" placeholder="Current Password: " required />
-            <input className="input is-info margin-bottom-20px" type="text" name="newPassword" placeholder="New Password: " required />
-            <a className="button is-link">Save Changes</a>
+            <input value={oldPassword} onChange={this.handleInputChange} className="input is-info margin-bottom-20px" type="text" name="oldPassword" placeholder="Current Password: " required />
+            <input value={newPassword} onChange={this.handleInputChange} className="input is-info margin-bottom-20px" type="text" name="newPassword" placeholder="New Password: " required />
+            <a onClick={this.handlePasswordResetClick} className="button is-link">Save Changes</a>
           </div>
 
         </div>
@@ -199,8 +241,8 @@ class Me extends React.Component {
           <div className="modal-content modal-content-border-deleteAcc has-background-light">
             <span onClick={this.handleDeleteAccount} className="close has-text-danger">&times;</span>
             <p className="subtitle">Enter password to confirm: </p>
-            <input className="input is-danger margin-bottom-20px" type="text" name="password" placeholder="Password: " required />
-            <a className="button is-danger">Delete account!</a>            
+            <input value={password} onChange={this.handleInputChange} className="input is-danger margin-bottom-20px" type="text" name="password" placeholder="Password: " required />
+            <a className="button is-danger">Delete account!</a>
           </div>
 
         </div>
@@ -209,7 +251,7 @@ class Me extends React.Component {
           <h2 className="title">About</h2>
           <pre><span className="has-text-weight-semibold">Username:</span> {username ? username : ""}</pre>
           <pre className="margin-bottom-20px"><span className="has-text-weight-semibold">Email:</span> {email ? email : ""}</pre>
-          <a onClick={this.handlePasswordReset} className="button is-info is-small margin-right-20px">Reset Password</a>
+          <a onClick={this.handlePasswordReset} className="button is-info is-small margin-right-20px">Change Password</a>
           <a onClick={this.handleDeleteAccount} className="button is-danger is-small">Delete Account</a>
         </div>
 
