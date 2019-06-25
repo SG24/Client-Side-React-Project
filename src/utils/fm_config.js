@@ -13,9 +13,6 @@ const FM_CONFIG = {
     "Realtime Stock Price": "https://financialmodelingprep.com/api/v3/stock/real-time-price/{ticker}",
     // Company's daily ratings
     "Company Ratings": "https://financialmodelingprep.com/api/v3/company/rating/{ticker}",
-    // Company Key Metrics
-    "Key Metrics (Annual)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}",
-    "Key Metrics (Quarter)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}?period=quarter",
     // Company Profile
     "Company Profile": "https://financialmodelingprep.com/api/v3/company/profile/{ticker}",
   },
@@ -35,6 +32,9 @@ const FM_CONFIG = {
     // Enterprise Value
     "Enterprise Value (Annual)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}",
     "Enterprise Value (Quarter)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}?period=quarter",
+    // Company Key Metrics
+    "Key Metrics (Annual)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}",
+    "Key Metrics (Quarter)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}?period=quarter",
   },
   
   historical: {

@@ -21,7 +21,7 @@ class SearchCompanies extends React.Component {
 
       // searched ?
       isSearched: false,
-      coData: null,
+      coData: {},
 
       // is the user logged in
       isLoggedIn: true,
@@ -33,7 +33,7 @@ class SearchCompanies extends React.Component {
   // handles search input value change
   handleQueryChange = (event) => {
     // updating query state
-    let query = event.target.value;
+    let query = event.target.value.toUpperCase();
     this.setState({ query });
     // updating search suggestions
     this.updateSearchSuggestions(query);
@@ -47,10 +47,43 @@ class SearchCompanies extends React.Component {
     this.setState({
       query: "",
       isSearched: true,
-      coData: null,
-      });
+      coData: {},
+    });
     this.updateSearchSuggestions("");
-    console.log(ticker);
+    this.fetchData(ticker);
+  }
+
+  // fetches requested company data
+  fetchData = (ticker) => {
+    // setting up urls
+    let { init } = FM_CONFIG;
+    let url = {};
+    for(let key in init){
+      // console.log(key, init[key].replace("{ticker}", ticker));
+      url[key] = init[key].replace("{ticker}", ticker);
+    }
+
+    for(let key in url){
+      fetch(url[key])
+        .then(res => res.json())
+        .then(data => {
+          // setting success status
+          data.success = true;
+          return data;
+        })
+        .catch(e => {
+          // setting success status
+          e.success = false;
+          return e;
+        })
+        .then(info => {
+          let coData = this.state.coData;
+          coData[key] = info;
+          this.setState({
+            coData: coData,
+          });
+        });
+    }
   }
 
   // updates search suggestions
@@ -125,10 +158,10 @@ class SearchCompanies extends React.Component {
         <Header title="Stocks" />
 
         <div className="container padding-40px margin-top-50px margin-bottom-20px text-center">
-          
+
           {/* Input search */}
           <input value={query} onChange={handleQueryChange} className="input is-focused is-link margin-bottom-20px" type="text" placeholder="Ticker or Company Name" />
-          
+
           {/* Suggestions */}
           <div className="container margin-bottom-20px">
             <h2 className="title is-5">{matchedSuggestions.length === 0 ? "" : "Did you mean: "}</h2>
@@ -159,15 +192,24 @@ class SearchCompanies extends React.Component {
 
         <div className="container text-center">
 
-              {
-                (function(){
-                  if(isSearched && coData === null){
-                    return (
-                      <a className="button is-warning is-large is-loading has-background-white no-borders">Loading</a>
-                    );
-                  }
-                })()
+          {
+            (function () {
+              if (isSearched && Object.keys(coData).length === 0) {
+                return (
+                  <a className="button is-warning is-large is-loading has-background-white no-borders">Loading</a>
+                );
               }
+              else if (isSearched && Object.keys(coData).length !== 0) {
+                return (
+                  <div>
+                    <p>{JSON.stringify(coData)}</p>
+                    <img src={coData["Company Profile"] ? coData["Company Profile"].profile.image : ""} />
+                    {JSON.stringify(coData["Company Profile"].profile.image) + "=========================" + JSON.stringify(coData["Company Profile"])}
+                  </div>
+                );
+              }
+            })()
+          }
 
         </div>
 
