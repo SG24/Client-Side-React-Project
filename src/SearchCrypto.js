@@ -166,8 +166,8 @@ class SearchCrypto extends React.Component {
         <Header title="Search Crypto-Currencies" />
 
         <div className="container control padding-40px margin-bottom-20px text-center">
-          <input onChange={this.handleInputChange} value={searchInputValue} className="input is-focused margin-bottom-20px" type="text" placeholder="Search By Ticker" />
-          <a onClick={this.handleSearch} className="button is-info">Search</a>
+          <input onChange={this.handleInputChange} value={searchInputValue} className="input is-focused is-link margin-bottom-20px" type="text" placeholder="Search By Ticker" />
+          <a onClick={this.handleSearch} className="button is-link">Search</a>
           <a></a>
         </div>
 
