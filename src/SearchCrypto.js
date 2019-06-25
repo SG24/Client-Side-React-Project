@@ -21,6 +21,9 @@ class SearchCrypto extends React.Component {
       query: "",
       isBookmarked: false,
       needsUpdate: false,
+
+      // boolean for is user is logged in
+      isLoggedIn: true,
     };
   }
 
@@ -45,6 +48,11 @@ class SearchCrypto extends React.Component {
       .catch(e => this.setState({
         cc: { success: false, err: "Unable to fetch data!" },
       }));
+
+    // checks if the user is logged in
+    if (!getUserID().token) {
+      this.setState({ isLoggedIn: false });
+    }
   };
 
   // handling input change
@@ -136,14 +144,14 @@ class SearchCrypto extends React.Component {
         alert("Unable to update bookmark, try again later!");
         console.log("Unexpected error occurred while trying to update the bookmark: ", e);
       })
-      .then(status => {if(status) updateUserBookmarks()});
-      
+      .then(status => { if (status) updateUserBookmarks() });
+
   }
 
   render() {
 
     // extracts information
-    let { searchInputValue, displayData, googleUrl, query, isBookmarked, needsUpdate } = this.state;
+    let { isLoggedIn, searchInputValue, displayData, googleUrl, query, isBookmarked, needsUpdate } = this.state;
     let { handleBookmarkUpdate, handleProfileUpdate } = this;
 
     // calculates result container classes
@@ -156,7 +164,7 @@ class SearchCrypto extends React.Component {
     let marketCap = displayData && displayData.marketCapitalization ? (displayData.marketCapitalization + "").split("").reverse().map((d, i, ar) => (i + 1) % 3 === 0 && i !== ar.length - 1 ? "," + d : d).reverse().join("") : 0;
 
     // authenticates user
-    if (!getUserID().token) return (
+    if (!isLoggedIn) return (
       <Redirect to="/login/auth" />
     );
 
