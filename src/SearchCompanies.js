@@ -30,6 +30,7 @@ class SearchCompanies extends React.Component {
       fsSelected: "income-statement",
       periodSelected: "annual",
       fsDisplayData: {},
+      fsPeriodsAgo: 1,
 
       // searched ?
       isSearched: false,
@@ -207,6 +208,14 @@ class SearchCompanies extends React.Component {
     this.fetchFSData(url);
   }
 
+  // handles selected financial statment's period change
+  handleFSPeriodChange = (event) => {
+    let period = event.target.value;
+    this.setState({
+      fsPeriodsAgo: period,
+    });
+  }
+
   // when component mounts
   componentDidMount = () => {
     // fetches symbols list for live searching
@@ -229,8 +238,8 @@ class SearchCompanies extends React.Component {
 
   render() {
     // extracting info
-    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice, displayDaysNumber, fsSelected, periodSelected, fsDisplayData } = this.state;
-    let { handleSearchClick, handleQueryChange, handleDaysNumChange, handleSelectedFSChange, handleFSSearch } = this;
+    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice, displayDaysNumber, fsSelected, periodSelected, fsDisplayData, fsPeriodsAgo } = this.state;
+    let { handleSearchClick, handleQueryChange, handleDaysNumChange, handleSelectedFSChange, handleFSSearch, handleFSPeriodChange } = this;
 
     // calculates class names
     let fsContainerClass = isSearched ? "container padding-40px margin-bottom-20px box text-center" : "container padding-40px margin-bottom-20px box text-center is-hidden";
@@ -427,12 +436,12 @@ class SearchCompanies extends React.Component {
           <h3 className="title is-5">Look-Up Financial Statements: </h3>
           <div>
             <select name="fsSelected" onChange={handleSelectedFSChange} value={fsSelected} className="button is-normal is-focused margin-right-20px margin-bottom-20px">
-              <option selected value="income-statement">Income Statement</option>
+              <option value="income-statement">Income Statement</option>
               <option value="balance-sheet-statement">Balance Sheet</option>
               <option value="cash-flow-statement">Cash Flow Statement</option>
             </select>
             <select name="periodSelected" onChange={handleSelectedFSChange} value={periodSelected} className="button is-normal is-focused margin-right-20px margin-bottom-20px">
-              <option selected value="annual">Annual</option>
+              <option value="annual">Annual</option>
               <option value="quarter">Quarter</option>
             </select>
             <a onClick={handleFSSearch} className="button is-link">View</a>
@@ -440,34 +449,33 @@ class SearchCompanies extends React.Component {
 
           {/* Displaying the desired information */}
           <div className="container text-center margin-bottom-20px margin-center">
-            <label className="text-center padding-40px margin-bottom-20px">
+            <label className="text-center padding-40px is-block margin-bottom-20px">
               <span className="has-text-weight-semibold">Showing </span>
-              <input className="input is-info width-80px is-small" type="number" value="1" />
+              <input onChange={handleFSPeriodChange} className="input is-info width-80px is-small" type="number" value={fsPeriodsAgo} />
               <span className="has-text-weight-semibold"> period old statement.</span>
             </label>
-            <table className="table is-striped is-bordered">
+            <table className="table is-striped is-bordered margin-center">
               <tbody>
                 {
                   (function () {
-                      let financialStatement = fsDisplayData.financials ? fsDisplayData.financials[0] : {};
-                      
-                      let financialStatementArr = [];
-                      for (let key in financialStatement) {
-                        let d = { key, value: financialStatement[key] };
-                        financialStatementArr.push(d);
-                      }
-                      
-                      return (
-                        financialStatementArr.map(data => {
-                          return (
-                            <tr key={uuidv4()}>
-                              <td className="has-text-weight-semibold">{data.key}</td>
-                              <td>{data.value}</td>
-                            </tr>
-                          );
-                        })
-                      );
-                    })()
+                    let financialStatement = fsDisplayData.financials && fsDisplayData.financials[fsPeriodsAgo - 1] ? fsDisplayData.financials[fsPeriodsAgo - 1] : {};
+                    let financialStatementArr = [];
+                    for (let key in financialStatement) {
+                      let d = { key, value: financialStatement[key] };
+                      financialStatementArr.push(d);
+                    }
+
+                    return (
+                      financialStatementArr.map(data => {
+                        return (
+                          <tr key={uuidv4()}>
+                            <td className="has-text-weight-semibold">{data.key}</td>
+                            <td>{data.value}</td>
+                          </tr>
+                        );
+                      })
+                    );
+                  })()
                 }
               </tbody>
             </table>
