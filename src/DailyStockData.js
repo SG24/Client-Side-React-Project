@@ -5,7 +5,6 @@ import "bulma/css/bulma.min.css";
 import './App.css';
 import uuidv4 from "uuid/v4";
 import Header from "./Header";
-import { runInThisContext } from "vm";
 
 // Declaring global variables and constants //
 const DAILY_UPDATES = [

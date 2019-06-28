@@ -1,13 +1,20 @@
-// Importing modules
+// Importing modules/libraries
 import React from "react";
-import "bulma/css/bulma.min.css";
-import "./App.css";
-import { getUserID } from "./utils/auth";
 import { Redirect } from "react-router-dom";
 import uuidv4 from "uuid/v4"
 import Fuse from "fuse.js";
-import FM_CONFIG from "./utils/fm_config";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Label } from "recharts";
+
+// importing custom components and functions
 import Header from "./Header";
+import { getUserID } from "./utils/auth";
+
+// importing stylesheets
+import "bulma/css/bulma.min.css";
+import "./App.css";
+
+// importing config files
+import FM_CONFIG from "./utils/fm_config";
 
 // Declaring Components
 class SearchCompanies extends React.Component {
@@ -22,6 +29,7 @@ class SearchCompanies extends React.Component {
       // searched ?
       isSearched: false,
       coData: {},
+      coHistoricalPrice: null,
 
       // is the user logged in
       isLoggedIn: true,
@@ -48,9 +56,39 @@ class SearchCompanies extends React.Component {
       query: "",
       isSearched: true,
       coData: {},
+      coHistoricalPrice: null,
     });
     this.updateSearchSuggestions("");
     this.fetchData(ticker);
+    this.fetchAndParseHistoricalData(ticker);
+  }
+
+  fetchAndParseHistoricalData = (ticker, time = null) => {
+
+    let url = "";
+
+    // fetches url
+    if (time === null) url = FM_CONFIG.historical.coStockOHLCVJSON_HistoricalDaily;
+
+    // replaces placeholder with the actual ticker in the url
+    url = url.replace("{ticker}", ticker);
+
+    // fetches data
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        data.success = true;
+        return data;
+      })
+      .catch(e => {
+        e.success = false;
+        return e;
+      })
+      .then(result => {
+        this.setState({
+          coHistoricalPrice: result,
+        });
+      });
   }
 
   // fetches requested company data
@@ -68,7 +106,7 @@ class SearchCompanies extends React.Component {
         .then(res => res.json())
         .then(data => {
           // setting success status
-          data.success = true;
+          data.success = data.Error ? false : true;
           return data;
         })
         .catch(e => {
@@ -143,7 +181,7 @@ class SearchCompanies extends React.Component {
 
   render() {
     // extracting info
-    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData } = this.state;
+    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice } = this.state;
     let { handleSearchClick, handleQueryChange } = this;
 
     // authenticating user
@@ -157,6 +195,7 @@ class SearchCompanies extends React.Component {
 
         <Header title="Stocks" />
 
+        {/* Renders input and live search suggestion reloading */}
         <div className="container padding-40px margin-top-50px margin-bottom-20px text-center">
 
           {/* Input search */}
@@ -190,7 +229,8 @@ class SearchCompanies extends React.Component {
 
         <hr />
 
-        <div className="container text-center">
+        {/* Renders company profile and rating */}
+        <div className="container text-center margin-bottom-20px">
 
           {
             (function () {
@@ -234,12 +274,12 @@ class SearchCompanies extends React.Component {
                               </div>
                               <hr />
                               <div className="width-60perc has-text-left">
-                                <pre><span className="is-italic has-text-weight-semibold">Stock Price (USD): </span>{info.profile.price}</pre>
-                                <pre><span className="is-italic has-text-weight-semibold">Changes (USD): </span>{info.profile.changes}</pre>
-                                <pre><span className="is-italic has-text-weight-semibold">Change Percentage (USD): </span>{info.profile.changesPercentage}</pre>
-                                <pre><span className="is-italic has-text-weight-semibold">Stock Price Range (USD): </span>{info.profile.range}</pre>
-                                <pre><span className="is-italic has-text-weight-semibold">Average Volume (USD): </span>{info.profile.volAvg}</pre>
-                                <pre><span className="is-italic has-text-weight-semibold">Market Capitalization (USD): </span>{info.profile.mktCap}</pre>
+                                <p><span className="is-italic has-text-weight-semibold">Stock Price (USD): </span>{info.profile.price}</p>
+                                <p><span className="is-italic has-text-weight-semibold">Changes (USD): </span>{info.profile.changes}</p>
+                                <p><span className="is-italic has-text-weight-semibold">Change Percentage: </span>{info.profile.changesPercentage}</p>
+                                <p><span className="is-italic has-text-weight-semibold">Stock Price Range (USD): </span>{info.profile.range}</p>
+                                <p><span className="is-italic has-text-weight-semibold">Average Volume: </span>{info.profile.volAvg}</p>
+                                <p><span className="is-italic has-text-weight-semibold">Market Capitalization (USD): </span>{info.profile.mktCap}</p>
                               </div>
                             </div>
                           );
@@ -256,7 +296,7 @@ class SearchCompanies extends React.Component {
                           return (
                             <div className="container box padding-40px content margin-bottom-20px margin-center has-text-left">
 
-                              <h3 className="title is-5">COMPANY RATINGS</h3>
+                              <h3 className="title is-5">COMPANY'S RATINGS</h3>
                               <p><span className="has-text-weight-bold">Average Score and Recommendation: </span>{avgRatings.score} | {avgRatings.recommendation}</p>
                               <p className="subtitle is-6">Details:</p>
                               <ul>
@@ -290,6 +330,43 @@ class SearchCompanies extends React.Component {
               }
             })()
           }
+
+        </div>
+
+        {/* Renders historical stock price line graph */}
+        <div>
+
+          {
+
+            (function () {
+              if (coHistoricalPrice && coHistoricalPrice.success) {
+
+                let historicalData = coHistoricalPrice.historical.slice(-100);
+                // console.log(historicalData);
+
+                return (
+                  <div className="container margin-bottom-20px">
+                    <h3 className="title is-5">Historical OHLC Stock Price Data</h3>
+                    <ResponsiveContainer height={500} width="90%">
+                      <LineChart height={400} data={historicalData} margin={{ top: 10, right: 20, bottom: 20, left: 20 }} label="Historical OHLC stock price data">
+                        <Line dot={false} type="monotone" dataKey="open" stroke="green" />
+                        <Line dot={false} type="monotone" dataKey="high" stroke="blue" />
+                        <Line dot={false} type="monotone" dataKey="low" stroke="red" />
+                        <Line dot={false} type="monotone" dataKey="close" stroke="#8884d8" />
+                        <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+                        <XAxis dataKey="date" />
+                        <YAxis type="number" domain={["dataMin", "datamax"]} />
+                        <Tooltip />
+                        <Legend />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                );
+              }
+            })()
+
+          }
+
 
         </div>
 

@@ -20,21 +20,21 @@ const FM_CONFIG = {
   inDepth: {
     // Income Statements
     "Income Statement (Annual)": "https://financialmodelingprep.com/api/v3/financials/income-statement/{ticker}",
-    "Income Statement (Quarter)": "https://financialmodelingprep.com/api/v3/financials/income-statement/{ticker}?period=quarter",
+    // "Income Statement (Quarter)": "https://financialmodelingprep.com/api/v3/financials/income-statement/{ticker}?period=quarter",
     // Balance Sheets
     "Balance Sheet (Annual)": "https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/{ticker}",
-    "Balance Sheet (Quarter)": "https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/{ticker}?period=quarter",
+    // "Balance Sheet (Quarter)": "https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/{ticker}?period=quarter",
     // Cash Flow Statements
     "Cash Flow Statement (Annual)": "https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/{ticker}",
-    "Cash Flow Statement (Quarter)": "https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/{ticker}?period=quarter",
+    // "Cash Flow Statement (Quarter)": "https://financialmodelingprep.com/api/v3/financials/cash-flow-statement/{ticker}?period=quarter",
     // Financial Ratios
     "Financial Ratios": "https://financialmodelingprep.com/api/v3/financial-ratios/{ticker}",
     // Enterprise Value
-    "Enterprise Value (Annual)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}",
-    "Enterprise Value (Quarter)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}?period=quarter",
+    // "Enterprise Value (Annual)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}",
+    // "Enterprise Value (Quarter)": "https://financialmodelingprep.com/api/v3/enterprise-value/{ticker}?period=quarter",
     // Company Key Metrics
-    "Key Metrics (Annual)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}",
-    "Key Metrics (Quarter)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}?period=quarter",
+    // "Key Metrics (Annual)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}",
+    // "Key Metrics (Quarter)": "https://financialmodelingprep.com/api/v3/company-key-metrics/{ticker}?period=quarter",
   },
   
   historical: {
