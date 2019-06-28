@@ -343,13 +343,11 @@ class SearchCompanies extends React.Component {
 
         {/* Renders historical stock price line graph */}
         <div>
-
           {
-
             (function () {
               if (coHistoricalPrice && coHistoricalPrice.success) {
 
-                let historicalData = coHistoricalPrice.historical.slice(-1*displayDaysNumber);
+                let historicalData = coHistoricalPrice.historical.slice(-1 * displayDaysNumber);
 
                 return (
                   <div className="container full-width margin-bottom-20px">
@@ -376,9 +374,35 @@ class SearchCompanies extends React.Component {
                 );
               }
             })()
+          }
+        </div>
+
+        {/* Renders options to view and view to income statements, balance sheet and financial ratios */}
+        <div>
+
+          {/* Input to receive user preference to get the view for */}
+          <div>
+            <select className="button is-normal is-focused">
+              <option value="" selected disabled hidden>-- Financial Statement --</option>
+              <option>Somthing</option>
+              <option>sdfgh</option>
+              <option>4grtbngbfrvc</option>
+              <option>wertghn</option>
+            </select>
+            <select className="button is-normal is-focused">
+            <option value="" selected disabled hidden>-- Period --</option>
+              <option>Somthing</option>
+              <option>sdfgh</option>
+              <option>4grtbngbfrvc</option>
+              <option>wertghn</option>
+            </select>
+            <a className="button is-info">View</a>
+          </div>
+
+          {/* Displaying the desired information */}
+          {
 
           }
-
         </div>
 
       </div>
