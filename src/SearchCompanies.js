@@ -26,6 +26,11 @@ class SearchCompanies extends React.Component {
       matchedSuggestions: [],
       extraSuggestions: [],
 
+      // fs selection
+      fsSelected: "income-statement",
+      periodSelected: "annual",
+      fsDisplayData: {},
+
       // searched ?
       isSearched: false,
       coData: {},
@@ -65,7 +70,6 @@ class SearchCompanies extends React.Component {
   }
 
   fetchAndParseHistoricalData = (ticker, time = null) => {
-
     let url = "";
 
     // fetches url
@@ -125,6 +129,25 @@ class SearchCompanies extends React.Component {
     }
   }
 
+  // fetches and updates financial statement selected
+  fetchFSData = (url) => {
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        data.success = data.Error ? false : true;
+        return data;
+      })
+      .catch(er => {
+        er.success = false;
+        return er;
+      })
+      .then(result => {
+        this.setState({
+          fsDisplayData: result,
+        });
+      });
+  }
+
   // updates search suggestions
   updateSearchSuggestions = (str) => {
     let { symbolsList } = this;
@@ -159,11 +182,29 @@ class SearchCompanies extends React.Component {
     }
   }
 
+  // handles change in number of days to view the historical OHLC stock data for
   handleDaysNumChange = (event) => {
     let numOfDays = event.target.value;
     this.setState({
       displayDaysNumber: numOfDays,
     });
+  }
+
+  // handles change in the financial statement's selected options
+  handleSelectedFSChange = (event) => {
+    let selection = event.target.name;
+    let value = event.target.value;
+    this.setState({
+      [selection]: value,
+    });
+  }
+
+  // handles search for the desired financial statement
+  handleFSSearch = () => {
+    let { fsSelected, periodSelected, coData } = this.state;
+    let ticker = coData["Company Profile"] ? coData["Company Profile"].symbol : "";
+    let url = "https://financialmodelingprep.com/api/v3/financials/"+ fsSelected +"/"+ ticker +"?period=" + periodSelected;
+    this.fetchFSData(url);
   }
 
   // when component mounts
@@ -184,13 +225,15 @@ class SearchCompanies extends React.Component {
     if (!getUserID().token) {
       this.setState({ isLoggedIn: false });
     }
-
   }
 
   render() {
     // extracting info
-    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice, displayDaysNumber } = this.state;
-    let { handleSearchClick, handleQueryChange, handleDaysNumChange } = this;
+    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice, displayDaysNumber, fsSelected, periodSelected, fsDisplayData } = this.state;
+    let { handleSearchClick, handleQueryChange, handleDaysNumChange, handleSelectedFSChange, handleFSSearch } = this;
+
+    // calculates class names
+    let fsContainerClass = isSearched ? "container padding-40px margin-bottom-20px box text-center" : "container padding-40px margin-bottom-20px box text-center is-hidden"; 
 
     // authenticating user
     if (!isLoggedIn) return (
@@ -377,31 +420,27 @@ class SearchCompanies extends React.Component {
           }
         </div>
 
-        {/* Renders options to view and view to income statements, balance sheet and financial ratios */}
-        <div>
+        {/* Renders options to view and view to income statements, cash flow statement and balance sheet */}
+        <div className={fsContainerClass}>
 
           {/* Input to receive user preference to get the view for */}
+          <h3 className="title is-5">Look-Up Financial Statements: </h3>
           <div>
-            <select className="button is-normal is-focused">
-              <option value="" selected disabled hidden>-- Financial Statement --</option>
-              <option>Somthing</option>
-              <option>sdfgh</option>
-              <option>4grtbngbfrvc</option>
-              <option>wertghn</option>
+            <select name="fsSelected" onChange={handleSelectedFSChange} value={fsSelected} className="button is-normal is-focused margin-right-20px margin-bottom-20px">
+              <option selected value="income-statement">Income Statement</option>
+              <option value="balance-sheet-statement">Balance Sheet</option>
+              <option value="cash-flow-statement">Cash Flow Statement</option>
             </select>
-            <select className="button is-normal is-focused">
-            <option value="" selected disabled hidden>-- Period --</option>
-              <option>Somthing</option>
-              <option>sdfgh</option>
-              <option>4grtbngbfrvc</option>
-              <option>wertghn</option>
+            <select name="periodSelected" onChange={handleSelectedFSChange} value={periodSelected} className="button is-normal is-focused margin-right-20px margin-bottom-20px">
+              <option selected value="annual">Annual</option>
+              <option value="quarter">Quarter</option>
             </select>
-            <a className="button is-info">View</a>
+            <a onClick={handleFSSearch} className="button is-link">View</a>
           </div>
 
           {/* Displaying the desired information */}
           {
-
+            JSON.stringify(fsDisplayData.financials ? fsDisplayData.financials[0] : null)
           }
         </div>
 
