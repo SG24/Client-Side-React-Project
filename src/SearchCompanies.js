@@ -58,12 +58,12 @@ class SearchCompanies extends React.Component {
     // setting up urls
     let { init } = FM_CONFIG;
     let url = {};
-    for(let key in init){
+    for (let key in init) {
       // console.log(key, init[key].replace("{ticker}", ticker));
       url[key] = init[key].replace("{ticker}", ticker);
     }
 
-    for(let key in url){
+    for (let key in url) {
       fetch(url[key])
         .then(res => res.json())
         .then(data => {
@@ -202,9 +202,89 @@ class SearchCompanies extends React.Component {
               else if (isSearched && Object.keys(coData).length !== 0) {
                 return (
                   <div>
-                    <p>{JSON.stringify(coData)}</p>
-                    <img src={coData["Company Profile"] ? coData["Company Profile"].profile.image : ""} />
-                    {JSON.stringify(coData["Company Profile"].profile.image) + "=========================" + JSON.stringify(coData["Company Profile"])}
+
+                    {
+
+                      // Returns Company profile
+                      (function () {
+                        if (coData["Company Profile"] && coData["Company Profile"].success) {
+                          let info = coData["Company Profile"];
+                          return (
+                            <div className="container box padding-40px content margin-bottom-20px margin-center has-text-left">
+
+                              <h3 className="title is-5">COMPANY PROFILE</h3>
+
+                              <div className="float-right width-20perc">
+                                <img src={info.profile.image} alt="Company Logo" />
+                              </div>
+                              <div className="is-clearfix width-60perc margin-bottom-20px">
+                                <h4 className="title is-6">{info.profile.companyName} ({info.symbol})</h4>
+                                <p className="is-medium">{info.profile.description}</p>
+                                <p className="is-medium"><span className="is-italic has-text-weight-semibold">CEO:</span> {info.profile.ceo}</p>
+                                <p className="is-medium"><span className="is-italic has-text-weight-semibold">Industry: </span>{info.profile.industry}</p>
+                                <p className="is-medium"><span className="is-italic has-text-weight-semibold">Sector:</span> {info.profile.sector}</p>
+                                <p className="is-medium"><span className="is-italic has-text-weight-semibold">Listed on</span> {info.profile.exchange}</p>
+                                <div>
+                                  <span className="is-italic has-text-weight-semibold">Some helpful links: </span>
+                                  <ul>
+                                    <li><a href={"https://www.google.com/search?q=" + info.profile.companyName.split(" ").join("+")} target="_blank">Google Search for {info.profile.companyName}</a></li>
+                                    <li><a href={info.profile.website} target="_blank">{info.profile.companyName} Website</a></li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <hr />
+                              <div className="width-60perc has-text-left">
+                                <pre><span className="is-italic has-text-weight-semibold">Stock Price (USD): </span>{info.profile.price}</pre>
+                                <pre><span className="is-italic has-text-weight-semibold">Changes (USD): </span>{info.profile.changes}</pre>
+                                <pre><span className="is-italic has-text-weight-semibold">Change Percentage (USD): </span>{info.profile.changesPercentage}</pre>
+                                <pre><span className="is-italic has-text-weight-semibold">Stock Price Range (USD): </span>{info.profile.range}</pre>
+                                <pre><span className="is-italic has-text-weight-semibold">Average Volume (USD): </span>{info.profile.volAvg}</pre>
+                                <pre><span className="is-italic has-text-weight-semibold">Market Capitalization (USD): </span>{info.profile.mktCap}</pre>
+                              </div>
+                            </div>
+                          );
+                        }
+                      })()
+                    }
+                    {
+
+                      // Returns Company Ratings
+                      (function () {
+                        if (coData["Company Ratings"] && coData["Company Ratings"].success) {
+                          let avgRatings = coData["Company Ratings"].rating;
+                          let crDetails = coData["Company Ratings"].ratingDetails;
+                          return (
+                            <div className="container box padding-40px content margin-bottom-20px margin-center has-text-left">
+
+                              <h3 className="title is-5">COMPANY RATINGS</h3>
+                              <p><span className="has-text-weight-bold">Average Score and Recommendation: </span>{avgRatings.score} | {avgRatings.recommendation}</p>
+                              <p className="subtitle is-6">Details:</p>
+                              <ul>
+
+                                {
+                                  (function () {
+                                    let crDetailsArr = [];
+                                    for (let ratio in crDetails) {
+                                      let cr = crDetails[ratio];
+                                      cr.ratio = ratio;
+                                      crDetailsArr.push(cr);
+                                    }
+                                    return crDetailsArr.map(cr => {
+                                      return (
+                                        <li key={uuidv4()}><span className="has-text-weight-semibold">{cr.ratio} score: </span>{cr.score} | {cr.recommendation}</li>
+                                      );
+                                    });
+                                  })()
+                                }
+
+                              </ul>
+
+                            </div>
+                          );
+                        }
+                      })()
+                    }
+
                   </div>
                 );
               }

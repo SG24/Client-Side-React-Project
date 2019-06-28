@@ -1,8 +1,20 @@
 /* Styles */
 
 /* spacing and positioning */
+.float-right {
+  float: right;
+}
+
 .full-width {
   width: 100%;
+}
+
+.width-60perc {
+  width: 60%;
+}
+
+.width-20perc {
+  width: 20%;
 }
 
 .margin-5px {
