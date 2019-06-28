@@ -350,11 +350,15 @@ class SearchCompanies extends React.Component {
               if (coHistoricalPrice && coHistoricalPrice.success) {
 
                 let historicalData = coHistoricalPrice.historical.slice(-1*displayDaysNumber);
-                // console.log(historicalData);
 
                 return (
                   <div className="container full-width margin-bottom-20px">
                     <h3 className="title is-5">Historical OHLC Stock Price Data</h3>
+                    <label className="padding-40px width-40perc text-center">
+                      <span className="has-text-weight-semibold">Show data for past </span>
+                      <input className="input is-info is-small width-80px" onChange={handleDaysNumChange} type="number" value={displayDaysNumber} />
+                      <span className="has-text-weight-semibold"> days.</span>
+                    </label>
                     <ResponsiveContainer height={500} width="90%">
                       <LineChart height={400} data={historicalData} margin={{ top: 10, right: 20, bottom: 20, left: 20 }} label="Historical OHLC stock price data">
                         <Line dot={false} type="monotone" dataKey="open" stroke="green" />
@@ -368,11 +372,6 @@ class SearchCompanies extends React.Component {
                         <Legend />
                       </LineChart>
                     </ResponsiveContainer>
-                    <label className="padding-40px width-40perc text-center">
-                      <span className="has-text-weight-semibold">Show data for past </span>
-                      <input className="input is-info is-small width-80px" onChange={handleDaysNumChange} type="number" value={displayDaysNumber} />
-                      <span className="has-text-weight-semibold"> days.</span>
-                    </label>
                   </div>
                 );
               }
