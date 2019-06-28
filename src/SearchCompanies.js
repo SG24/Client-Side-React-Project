@@ -30,6 +30,7 @@ class SearchCompanies extends React.Component {
       isSearched: false,
       coData: {},
       coHistoricalPrice: null,
+      displayDaysNumber: 100,
 
       // is the user logged in
       isLoggedIn: true,
@@ -158,6 +159,13 @@ class SearchCompanies extends React.Component {
     }
   }
 
+  handleDaysNumChange = (event) => {
+    let numOfDays = event.target.value;
+    this.setState({
+      displayDaysNumber: numOfDays,
+    });
+  }
+
   // when component mounts
   componentDidMount = () => {
     // fetches symbols list for live searching
@@ -181,8 +189,8 @@ class SearchCompanies extends React.Component {
 
   render() {
     // extracting info
-    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice } = this.state;
-    let { handleSearchClick, handleQueryChange } = this;
+    let { isLoggedIn, query, matchedSuggestions, extraSuggestions, isSearched, coData, coHistoricalPrice, displayDaysNumber } = this.state;
+    let { handleSearchClick, handleQueryChange, handleDaysNumChange } = this;
 
     // authenticating user
     if (!isLoggedIn) return (
@@ -341,11 +349,11 @@ class SearchCompanies extends React.Component {
             (function () {
               if (coHistoricalPrice && coHistoricalPrice.success) {
 
-                let historicalData = coHistoricalPrice.historical.slice(-100);
+                let historicalData = coHistoricalPrice.historical.slice(-1*displayDaysNumber);
                 // console.log(historicalData);
 
                 return (
-                  <div className="container margin-bottom-20px">
+                  <div className="container full-width margin-bottom-20px">
                     <h3 className="title is-5">Historical OHLC Stock Price Data</h3>
                     <ResponsiveContainer height={500} width="90%">
                       <LineChart height={400} data={historicalData} margin={{ top: 10, right: 20, bottom: 20, left: 20 }} label="Historical OHLC stock price data">
@@ -360,13 +368,17 @@ class SearchCompanies extends React.Component {
                         <Legend />
                       </LineChart>
                     </ResponsiveContainer>
+                    <label className="padding-40px width-40perc text-center">
+                      <span className="has-text-weight-semibold">Show data for past </span>
+                      <input className="input is-info is-small width-80px" onChange={handleDaysNumChange} type="number" value={displayDaysNumber} />
+                      <span className="has-text-weight-semibold"> days.</span>
+                    </label>
                   </div>
                 );
               }
             })()
 
           }
-
 
         </div>
 
