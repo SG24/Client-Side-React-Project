@@ -203,7 +203,7 @@ class SearchCompanies extends React.Component {
   handleFSSearch = () => {
     let { fsSelected, periodSelected, coData } = this.state;
     let ticker = coData["Company Profile"] ? coData["Company Profile"].symbol : "";
-    let url = "https://financialmodelingprep.com/api/v3/financials/"+ fsSelected +"/"+ ticker +"?period=" + periodSelected;
+    let url = "https://financialmodelingprep.com/api/v3/financials/" + fsSelected + "/" + ticker + "?period=" + periodSelected;
     this.fetchFSData(url);
   }
 
@@ -233,7 +233,7 @@ class SearchCompanies extends React.Component {
     let { handleSearchClick, handleQueryChange, handleDaysNumChange, handleSelectedFSChange, handleFSSearch } = this;
 
     // calculates class names
-    let fsContainerClass = isSearched ? "container padding-40px margin-bottom-20px box text-center" : "container padding-40px margin-bottom-20px box text-center is-hidden"; 
+    let fsContainerClass = isSearched ? "container padding-40px margin-bottom-20px box text-center" : "container padding-40px margin-bottom-20px box text-center is-hidden";
 
     // authenticating user
     if (!isLoggedIn) return (
@@ -439,9 +439,40 @@ class SearchCompanies extends React.Component {
           </div>
 
           {/* Displaying the desired information */}
-          {
-            JSON.stringify(fsDisplayData.financials ? fsDisplayData.financials[0] : null)
-          }
+          <div className="container text-center margin-bottom-20px margin-center">
+            <label className="text-center padding-40px margin-bottom-20px">
+              <span className="has-text-weight-semibold">Showing </span>
+              <input className="input is-info width-80px is-small" type="number" value="1" />
+              <span className="has-text-weight-semibold"> period old statement.</span>
+            </label>
+            <table className="table is-striped is-bordered">
+              <tbody>
+                {
+                  (function () {
+                      let financialStatement = fsDisplayData.financials ? fsDisplayData.financials[0] : {};
+                      
+                      let financialStatementArr = [];
+                      for (let key in financialStatement) {
+                        let d = { key, value: financialStatement[key] };
+                        financialStatementArr.push(d);
+                      }
+                      
+                      return (
+                        financialStatementArr.map(data => {
+                          return (
+                            <tr key={uuidv4()}>
+                              <td className="has-text-weight-semibold">{data.key}</td>
+                              <td>{data.value}</td>
+                            </tr>
+                          );
+                        })
+                      );
+                    })()
+                }
+              </tbody>
+            </table>
+          </div>
+
         </div>
 
       </div>
