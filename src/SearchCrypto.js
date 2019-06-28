@@ -29,25 +29,26 @@ class SearchCrypto extends React.Component {
 
   componentDidMount = () => {
     setAuthToken();
-    axios.get("/api/v1/fm/cc")
-      .then(data => {
+    // Route removed from backend
+    // axios.get("/api/v1/fm/cc")
+    //   .then(data => {
 
-        // extracting data
-        let urls = null;
-        if (data.data.success) urls = data.data.ccApiUrl;
-        else if (!data.data.success) urls = data.data;
+    //     // extracting data
+    //     let urls = null;
+    //     if (data.data.success) urls = data.data.ccApiUrl;
+    //     else if (!data.data.success) urls = data.data;
 
-        // updating state
-        this.setState({
-          cc: urls,
-        });
+    //     // updating state
+    //     this.setState({
+    //       cc: urls,
+    //     });
 
-        // returning url
-        return urls.ccApiUrl ? urls.ccApiUrl : false;
-      })
-      .catch(e => this.setState({
-        cc: { success: false, err: "Unable to fetch data!" },
-      }));
+    //     // returning url
+    //     return urls.ccApiUrl ? urls.ccApiUrl : false;
+    //   })
+    //   .catch(e => this.setState({
+    //     cc: { success: false, err: "Unable to fetch data!" },
+    //   }));
 
     // checks if the user is logged in
     if (!getUserID().token) {
@@ -87,7 +88,8 @@ class SearchCrypto extends React.Component {
 
   // fetching data
   fetchData = (query) => {
-    let url = this.state.cc["Crypto-Currencies"].replace("{ticker}", query);
+    // let url = this.state.cc["Crypto-Currencies"].replace("{ticker}", query);
+    let url = "https://financialmodelingprep.com/api/v3/cryptocurrency/" + query;
     fetch(url)
       .then(res => res.json())
       .then(data => {
